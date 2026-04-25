@@ -100,19 +100,19 @@ class UserService:
         return OnboardingResponse(user=UserSchema.model_validate(user))
 
     async def change_password(self, user: User, data: ChangePasswordRequest) -> None:
-        if not user.hashed_password or not verify_password(
+        if not user.hashed_password or not await verify_password(
             data.current_password, user.hashed_password
         ):
             raise BadRequestException("Current password is incorrect")
         from app.core.security import hash_password
-        user.hashed_password = hash_password(data.new_password)
+        user.hashed_password = await hash_password(data.new_password)
         user.refresh_token = None
         await self.db.commit()
         await cache_delete(f"user:{user.id}")
         logger.info("password_changed", user_id=str(user.id))
 
     async def delete_me(self, user: User, data: DeleteAccountRequest) -> None:
-        if not user.hashed_password or not verify_password(
+        if not user.hashed_password or not await verify_password(
             data.password, user.hashed_password
         ):
             raise BadRequestException("Incorrect password")

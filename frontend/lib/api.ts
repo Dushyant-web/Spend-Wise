@@ -3,7 +3,7 @@ import axios, { AxiosError } from 'axios'
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 15000,
+  timeout: 60000,
 })
 
 // Request interceptor: attach Bearer token

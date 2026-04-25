@@ -1,3 +1,4 @@
+import asyncio
 import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any, Optional
@@ -5,15 +6,23 @@ import bcrypt
 from jose import JWTError, jwt
 from app.config import settings
 
-_ROUNDS = 12
+_ROUNDS = 10
 
 
-def hash_password(password: str) -> str:
+def _hash_sync(password: str) -> str:
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt(_ROUNDS)).decode()
 
 
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
+def _verify_sync(plain: str, hashed: str) -> bool:
+    return bcrypt.checkpw(plain.encode(), hashed.encode())
+
+
+async def hash_password(password: str) -> str:
+    return await asyncio.to_thread(_hash_sync, password)
+
+
+async def verify_password(plain_password: str, hashed_password: str) -> bool:
+    return await asyncio.to_thread(_verify_sync, plain_password, hashed_password)
 
 
 def create_access_token(subject: str, extra: Optional[dict[str, Any]] = None) -> str:

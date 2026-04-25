@@ -55,7 +55,7 @@ class AuthService:
         user = User(
             name=data.name,
             email=data.email,
-            hashed_password=hash_password(data.password),
+            hashed_password=await hash_password(data.password),
             college=data.college,
             city=data.city,
             is_verified=True,
@@ -92,7 +92,7 @@ class AuthService:
 
         if not user or not user.hashed_password:
             raise UnauthorizedException("Invalid email or password")
-        if not verify_password(data.password, user.hashed_password):
+        if not await verify_password(data.password, user.hashed_password):
             raise UnauthorizedException("Invalid email or password")
 
         access_token = create_access_token(
