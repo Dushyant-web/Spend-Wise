@@ -35,9 +35,8 @@ api.interceptors.response.use(
           { refresh_token: refreshToken }
         )
         useAuthStore.getState().setTokens(data.access_token, data.refresh_token)
-        original.headers = {
-          ...original.headers,
-          Authorization: `Bearer ${data.access_token}`,
+        if (original.headers) {
+          original.headers['Authorization'] = `Bearer ${data.access_token}`
         }
         return api(original)
       } catch {
