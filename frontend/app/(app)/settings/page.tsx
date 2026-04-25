@@ -46,7 +46,7 @@ function Section({
   title,
   children,
 }: {
-  icon: React.ElementType;
+  icon: React.ComponentType<{ style?: React.CSSProperties; className?: string }>;
   title: string;
   children: React.ReactNode;
 }) {
