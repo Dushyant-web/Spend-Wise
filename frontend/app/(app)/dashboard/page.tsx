@@ -189,28 +189,40 @@ export default function DashboardPage() {
         </div>
 
         <div
-          style={{ position: "absolute", right: 24, bottom: 20, zIndex: 2, display: "flex", gap: 8, alignItems: "center" }}
+          style={{
+            position: "absolute",
+            right: 20,
+            bottom: 18,
+            zIndex: 2,
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            alignItems: "stretch",
+          }}
         >
-          <Link href="/ai-coach" aria-label="Open AI Coach">
+          <Link href="/ai-coach" aria-label="Open AI Coach" style={{ textDecoration: "none" }}>
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.94 }}
-              className="btn"
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.96 }}
               style={{
-                background: "var(--surface-1)",
-                border: "1px solid var(--border-subtle)",
+                background: "linear-gradient(135deg, rgba(167,139,250,0.16), rgba(108,99,255,0.10))",
+                border: "1px solid var(--border-default)",
                 color: "var(--accent)",
                 padding: "0 14px",
-                height: 38,
+                height: 40,
                 display: "inline-flex",
                 alignItems: "center",
-                gap: 6,
+                justifyContent: "center",
+                gap: 8,
+                borderRadius: 12,
+                fontSize: "0.813rem",
+                fontWeight: 600,
+                backdropFilter: "blur(10px)",
+                WebkitBackdropFilter: "blur(10px)",
               }}
             >
               <Sparkles style={{ width: 15, height: 15 }} />
-              <span className="hidden sm:inline" style={{ fontSize: "0.813rem", fontWeight: 600 }}>
-                AI Coach
-              </span>
+              AI Coach
             </motion.div>
           </Link>
           <motion.button
@@ -218,6 +230,7 @@ export default function DashboardPage() {
             whileTap={{ scale: 0.96 }}
             onClick={() => setAddOpen(true)}
             className="btn btn-primary"
+            style={{ height: 44 }}
           >
             <Plus style={{ width: 15, height: 15 }} />
             Add Expense
@@ -323,7 +336,7 @@ export default function DashboardPage() {
                     ? "linear-gradient(90deg, var(--danger), #F87171)"
                     : budget.percentage_used >= 70
                     ? "linear-gradient(90deg, var(--warning), #FCD34D)"
-                    : "linear-gradient(90deg, var(--accent), #A78BFA)",
+                    : "linear-gradient(90deg, var(--accent), #7DDEFF)",
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(budget.percentage_used, 100)}%` }}

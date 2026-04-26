@@ -64,13 +64,13 @@ export default function StarsBackground() {
         const alpha = 0.4 + Math.sin(s.twinkle) * 0.3 * s.z + s.z * 0.3;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r * (0.6 + s.z * 0.6), 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(220, 230, 255, ${alpha})`;
+        ctx.fillStyle = `rgba(220, 240, 255, ${alpha})`;
         ctx.fill();
 
         if (s.z > 0.85) {
           ctx.beginPath();
           ctx.arc(s.x, s.y, s.r * 2.2, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(180, 160, 255, ${alpha * 0.18})`;
+          ctx.fillStyle = `rgba(125, 222, 255, ${alpha * 0.22})`;
           ctx.fill();
         }
       }

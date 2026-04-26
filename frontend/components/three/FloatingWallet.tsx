@@ -17,52 +17,52 @@ function Wallet() {
 
   return (
     <group ref={group}>
-      {/* Wallet body */}
+      {/* Wallet body — deep ocean */}
       <RoundedBox args={[2.4, 1.6, 0.45]} radius={0.18} smoothness={6} castShadow receiveShadow>
         <meshPhysicalMaterial
-          color="#1a1a2e"
-          metalness={0.55}
-          roughness={0.25}
-          clearcoat={0.9}
-          clearcoatRoughness={0.25}
+          color="#0A1A2E"
+          metalness={0.6}
+          roughness={0.22}
+          clearcoat={0.95}
+          clearcoatRoughness={0.18}
         />
       </RoundedBox>
 
-      {/* Wallet flap accent */}
+      {/* Wallet flap accent — ice cyan */}
       <mesh position={[0, 0.05, 0.226]}>
         <RoundedBox args={[2.36, 1.0, 0.02]} radius={0.1} smoothness={6}>
           <meshPhysicalMaterial
-            color="#6C63FF"
-            emissive="#6C63FF"
+            color="#4FD1FF"
+            emissive="#4FD1FF"
             emissiveIntensity={0.55}
-            metalness={0.4}
-            roughness={0.3}
+            metalness={0.5}
+            roughness={0.25}
           />
         </RoundedBox>
       </mesh>
 
-      {/* SpendWise logo bolt */}
+      {/* Logo bolt — sea glass */}
       <mesh position={[0, 0.05, 0.245]}>
         <torusGeometry args={[0.18, 0.04, 16, 32]} />
-        <meshStandardMaterial color="#00D4AA" emissive="#00D4AA" emissiveIntensity={0.7} />
+        <meshStandardMaterial color="#00C9A7" emissive="#00C9A7" emissiveIntensity={0.75} />
       </mesh>
 
-      {/* Card peek */}
+      {/* Card peek — aqua */}
       <mesh position={[0.4, -0.55, 0.18]} rotation={[0, 0, -0.05]}>
         <RoundedBox args={[1.8, 0.7, 0.04]} radius={0.08} smoothness={4}>
           <meshPhysicalMaterial
-            color="#00D4AA"
+            color="#00C9A7"
             metalness={0.7}
-            roughness={0.2}
-            emissive="#00D4AA"
-            emissiveIntensity={0.15}
+            roughness={0.18}
+            emissive="#00C9A7"
+            emissiveIntensity={0.18}
           />
         </RoundedBox>
       </mesh>
 
-      {/* Glow ring */}
+      {/* Glow ring — frost cyan */}
       <Torus args={[1.7, 0.02, 16, 80]} rotation={[Math.PI / 2.2, 0, 0]} position={[0, -0.02, 0]}>
-        <meshBasicMaterial color="#A78BFA" transparent opacity={0.5} />
+        <meshBasicMaterial color="#7DDEFF" transparent opacity={0.55} />
       </Torus>
     </group>
   );
@@ -109,7 +109,7 @@ function Particles({ count = 80 }: { count?: number }) {
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} args={[positions, 3]} />
       </bufferGeometry>
-      <pointsMaterial size={0.04} color="#A78BFA" transparent opacity={0.55} sizeAttenuation />
+      <pointsMaterial size={0.04} color="#7DDEFF" transparent opacity={0.55} sizeAttenuation />
     </points>
   );
 }
@@ -119,16 +119,16 @@ function Scene() {
     <>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
-      <directionalLight position={[-3, 2, -3]} intensity={0.6} color="#6C63FF" />
-      <pointLight position={[0, -3, 2]} intensity={1.2} color="#00D4AA" distance={6} />
+      <directionalLight position={[-3, 2, -3]} intensity={0.6} color="#4FD1FF" />
+      <pointLight position={[0, -3, 2]} intensity={1.2} color="#00C9A7" distance={6} />
 
       <Float floatIntensity={0.6} rotationIntensity={0.3} speed={1.4}>
         <Wallet />
       </Float>
 
-      <Coin radius={2.0} speed={0.6} phase={0} color="#FFB347" />
-      <Coin radius={2.3} speed={0.45} phase={Math.PI * 0.7} color="#6C63FF" />
-      <Coin radius={2.6} speed={0.55} phase={Math.PI * 1.4} color="#00D4AA" />
+      <Coin radius={2.0} speed={0.6} phase={0} color="#7DDEFF" />
+      <Coin radius={2.3} speed={0.45} phase={Math.PI * 0.7} color="#4FD1FF" />
+      <Coin radius={2.6} speed={0.55} phase={Math.PI * 1.4} color="#00C9A7" />
 
       <Particles />
 

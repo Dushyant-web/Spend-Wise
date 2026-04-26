@@ -1,10 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { User, MapPin, GraduationCap, Zap, Flame, Trophy, Settings } from "lucide-react";
+import { User, MapPin, GraduationCap, Zap, Flame, Trophy, Settings, LogOut } from "lucide-react";
 import Link from "next/link";
 import Modal from "./Modal";
 import { useAuthStore } from "@/stores/authStore";
+import { useAuth } from "@/hooks/useAuth";
 import { getLevelName } from "@/lib/utils";
 
 interface Props {
@@ -14,6 +15,7 @@ interface Props {
 
 export default function ProfileModal({ open, onClose }: Props) {
   const { user } = useAuthStore();
+  const { logout } = useAuth();
   if (!user) return null;
 
   const xp = (user as any)?.stats?.total_xp ?? 0;
@@ -91,13 +93,30 @@ export default function ProfileModal({ open, onClose }: Props) {
           </div>
         </div>
 
-        <Link
-          href="/settings"
-          onClick={onClose}
-          className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-sm transition-colors"
-        >
-          <Settings className="w-4 h-4" /> Edit Profile
-        </Link>
+        <div className="grid grid-cols-2 gap-2">
+          <Link
+            href="/settings"
+            onClick={onClose}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 text-sm transition-colors"
+          >
+            <Settings className="w-4 h-4" /> Edit Profile
+          </Link>
+          <motion.button
+            whileTap={{ scale: 0.97 }}
+            onClick={() => {
+              onClose();
+              logout();
+            }}
+            className="flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-medium transition-colors"
+            style={{
+              background: "rgba(240,86,114,0.10)",
+              border: "1px solid rgba(240,86,114,0.25)",
+              color: "#F05672",
+            }}
+          >
+            <LogOut className="w-4 h-4" /> Log out
+          </motion.button>
+        </div>
       </div>
     </Modal>
   );

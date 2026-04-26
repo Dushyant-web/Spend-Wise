@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bolt" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#B8EEFF"/>
+      <stop offset="0.45" stop-color="#4FD1FF"/>
+      <stop offset="1" stop-color="#00C9A7"/>
+    </linearGradient>
+    <radialGradient id="boltGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4FD1FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#4FD1FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <ellipse cx="512" cy="512" rx="240" ry="240" fill="url(#boltGlow)"/>
+
+  <g transform="translate(176, 176) scale(0.66)">
+    <path d="M 597 128 L 256 597 L 469 597 L 427 896 L 768 427 L 555 427 Z"
+          fill="url(#bolt)"
+          stroke="#E8F4FF"
+          stroke-width="10"
+          stroke-linejoin="round"
+          stroke-linecap="round"/>
+  </g>
+</svg>

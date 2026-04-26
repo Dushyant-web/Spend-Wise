@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#103E69"/>
+      <stop offset="0.5" stop-color="#0A1A35"/>
+      <stop offset="1" stop-color="#040A14"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0.2" y1="0" x2="0.8" y2="1">
+      <stop offset="0" stop-color="#B8EEFF"/>
+      <stop offset="0.45" stop-color="#4FD1FF"/>
+      <stop offset="1" stop-color="#00C9A7"/>
+    </linearGradient>
+    <radialGradient id="topGlow" cx="0.5" cy="0.15" r="0.7">
+      <stop offset="0" stop-color="#4FD1FF" stop-opacity="0.45"/>
+      <stop offset="0.7" stop-color="#4FD1FF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="boltGlow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#4FD1FF" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#4FD1FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#bg)"/>
+  <rect width="1024" height="1024" rx="224" ry="224" fill="url(#topGlow)"/>
+
+  <ellipse cx="512" cy="512" rx="320" ry="320" fill="url(#boltGlow)"/>
+
+  <path d="M 597 128 L 256 597 L 469 597 L 427 896 L 768 427 L 555 427 Z"
+        fill="url(#bolt)"
+        stroke="#E8F4FF"
+        stroke-width="8"
+        stroke-linejoin="round"
+        stroke-linecap="round"/>
+
+  <rect width="1024" height="1024" rx="224" ry="224"
+        fill="none"
+        stroke="rgba(180,220,255,0.18)"
+        stroke-width="3"/>
+</svg>
