@@ -5,17 +5,22 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import Testimonials from "@/components/landing/Testimonials";
 import PricingTable from "@/components/landing/PricingTable";
 import CTA from "@/components/landing/CTA";
+import LandingOrMobileWelcome from "@/components/mobile/LandingOrMobileWelcome";
 
 export default function LandingPage() {
   return (
-    <>
-      <Hero />
-      <DashboardPreview />
-      <FeaturesBento />
-      <HowItWorks />
-      <Testimonials />
-      <PricingTable />
-      <CTA />
-    </>
+    <LandingOrMobileWelcome
+      landing={
+        <>
+          <Hero />
+          <DashboardPreview />
+          <FeaturesBento />
+          <HowItWorks />
+          <Testimonials />
+          <PricingTable />
+          <CTA />
+        </>
+      }
+    />
   );
 }

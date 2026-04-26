@@ -47,6 +47,7 @@ function PasswordStrength({ password }: { password: string }) {
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [agreed, setAgreed] = useState(false)
   const { register: registerUser, isLoading } = useAuth()
 
   const {
@@ -185,8 +186,29 @@ export default function RegisterPage() {
             )}
           </div>
 
+          {/* Terms & Privacy */}
+          <label className="flex items-start gap-2.5 cursor-pointer select-none pt-1">
+            <input
+              type="checkbox"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[#6C63FF]"
+            />
+            <span className="text-xs leading-relaxed text-[#9CA3AF]">
+              I agree to the{' '}
+              <Link href="/terms" className="text-[#A78BFA] hover:text-[#C4B5FD] underline-offset-2 hover:underline">
+                Terms of Service
+              </Link>{' '}
+              and{' '}
+              <Link href="/privacy" className="text-[#A78BFA] hover:text-[#C4B5FD] underline-offset-2 hover:underline">
+                Privacy Policy
+              </Link>
+              .
+            </span>
+          </label>
+
           {/* Submit */}
-          <Button type="submit" className="w-full mt-1" size="lg" disabled={isLoading}>
+          <Button type="submit" className="w-full mt-1" size="lg" disabled={isLoading || !agreed}>
             {isLoading ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
