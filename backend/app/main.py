@@ -102,6 +102,13 @@ async def app_exception_handler(request: Request, exc: AppException) -> JSONResp
 
 @app.exception_handler(Exception)
 async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    logger.error("unhandled_exception", error=type(exc).__name__, path=request.url.path)
-    detail = str(exc) if settings.DEBUG else "An unexpected error occurred"
-    return JSONResponse(status_code=500, content={"detail": detail})
+    logger.error(
+        "unhandled_exception",
+        error=type(exc).__name__,
+        message=str(exc),
+        path=request.url.path,
+    )
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"{type(exc).__name__}: {str(exc)}"},
+    )

@@ -46,23 +46,43 @@ class AuthService:
         self.db = db
 
     async def register(self, data: RegisterRequest) -> AuthResponse:
-        existing = await self.db.execute(
-            select(User).where(User.email == data.email)
-        )
+        logger.info("register_step", step="start", email=data.email)
+        try:
+            existing = await self.db.execute(
+                select(User).where(User.email == data.email)
+            )
+            logger.info("register_step", step="email_check_done")
+        except Exception as e:
+            logger.error("register_step_failed", step="email_check", error=str(e))
+            raise
+
         if existing.scalar_one_or_none():
+            logger.info("register_step", step="email_exists")
             raise ConflictException("An account with this email already exists")
+
+        try:
+            hashed = await hash_password(data.password)
+            logger.info("register_step", step="password_hashed")
+        except Exception as e:
+            logger.error("register_step_failed", step="hash_password", error=str(e))
+            raise
 
         user = User(
             name=data.name,
             email=data.email,
-            hashed_password=await hash_password(data.password),
+            hashed_password=hashed,
             college=data.college,
             city=data.city,
             is_verified=True,
             auth_provider="email",
         )
         self.db.add(user)
-        await self.db.flush()
+        try:
+            await self.db.flush()
+            logger.info("register_step", step="user_flushed", user_id=str(user.id))
+        except Exception as e:
+            logger.error("register_step_failed", step="user_flush", error=str(e))
+            raise
 
         self.db.add(UserStats(user_id=user.id))
 
@@ -71,7 +91,12 @@ class AuthService:
         user.refresh_token = refresh_token
         user.last_login_at = datetime.now(timezone.utc)
 
-        await self.db.commit()
+        try:
+            await self.db.commit()
+            logger.info("register_step", step="committed")
+        except Exception as e:
+            logger.error("register_step_failed", step="commit", error=str(e))
+            raise
 
         user = await _load_user_with_stats(self.db, user.id)
 
