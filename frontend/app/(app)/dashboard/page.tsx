@@ -188,16 +188,41 @@ export default function DashboardPage() {
           <SpendingOrb />
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={() => setAddOpen(true)}
-          className="btn btn-primary"
-          style={{ position: "absolute", right: 24, bottom: 20, zIndex: 2 }}
+        <div
+          style={{ position: "absolute", right: 24, bottom: 20, zIndex: 2, display: "flex", gap: 8, alignItems: "center" }}
         >
-          <Plus style={{ width: 15, height: 15 }} />
-          Add Expense
-        </motion.button>
+          <Link href="/ai-coach" aria-label="Open AI Coach">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.94 }}
+              className="btn"
+              style={{
+                background: "var(--surface-1)",
+                border: "1px solid var(--border-subtle)",
+                color: "var(--accent)",
+                padding: "0 14px",
+                height: 38,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+              }}
+            >
+              <Sparkles style={{ width: 15, height: 15 }} />
+              <span className="hidden sm:inline" style={{ fontSize: "0.813rem", fontWeight: 600 }}>
+                AI Coach
+              </span>
+            </motion.div>
+          </Link>
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => setAddOpen(true)}
+            className="btn btn-primary"
+          >
+            <Plus style={{ width: 15, height: 15 }} />
+            Add Expense
+          </motion.button>
+        </div>
       </motion.div>
 
       {/* KPI row */}
