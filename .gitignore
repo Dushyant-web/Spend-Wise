@@ -53,6 +53,11 @@ frontend/.vercel/
 # Capacitor native project folders (generated — not source)
 frontend/ios/
 frontend/android/
+frontend/android-admin/
+
+# APK build outputs
+*.apk
+*.aab
 
 # Test coverage
 frontend/coverage/

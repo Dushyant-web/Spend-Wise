@@ -11,7 +11,9 @@
     "test": "vitest run",
     "mobile:build": "next build && npx cap sync",
     "mobile:ios": "next build && npx cap sync ios && npx cap open ios",
-    "mobile:android": "next build && npx cap sync android && npx cap open android"
+    "mobile:android": "next build && npx cap sync android && npx cap open android",
+    "build:admin": "NEXT_PUBLIC_APP_MODE=admin next build",
+    "mobile:android:admin": "bash scripts/build-admin-apk.sh"
   },
   "dependencies": {
     "@gsap/react": "^2.1.0",
