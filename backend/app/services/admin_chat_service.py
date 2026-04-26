@@ -1,7 +1,9 @@
 """
-Admin Omniscient Chatbot — full read access to all user data.
+Admin Omniscient Chatbot — full read access to all user data + action tools.
 Passwords are NEVER included (they are bcrypt hashes and provide zero useful info).
 """
+import json
+import re
 import httpx
 import structlog
 from datetime import date, timedelta, datetime, timezone
@@ -13,6 +15,7 @@ from app.models.user import User, UserStats
 from app.models.expense import Expense
 from app.models.budget import Budget
 from app.models.achievement import Achievement
+from app.models.notification import Notification
 
 log = structlog.get_logger()
 
@@ -67,7 +70,32 @@ RESPONSE FORMAT — write like Claude Opus:
 - For data lookups (user info, stats), use a clean labeled list, not paragraphs.
 - For code, default to a fenced block with the language tag; explain only what's non-obvious.
 - Match length to the question. A factual question gets 1–2 sentences. A research request gets a structured answer. Don't pad.
-- End cleanly. No "Let me know if you need more!" trailing fluff unless the answer genuinely invites follow-up."""
+- End cleanly. No "Let me know if you need more!" trailing fluff unless the answer genuinely invites follow-up.
+
+ACTIONS YOU CAN PERFORM (real side effects on the platform):
+You can take real actions on behalf of the admin. To trigger one, append EXACTLY ONE fenced ```action block at the very end of your response. Format:
+
+```action
+{"name": "<tool>", "args": {...}}
+```
+
+Available tools:
+1. send_notification — send an in-app notification to a single user
+   args: {"user": "<email or name fragment>", "title": "<short title>", "message": "<body>", "severity": "info" | "success" | "warning" | "error"}
+   Severity is optional; default "info".
+
+2. broadcast_announcement — send an in-app notification to all users (or only inactive ones)
+   args: {"title": "<short title>", "message": "<body>", "target": "all" | "inactive"}
+   Target is optional; default "all".
+
+3. view_user_stats — pull a fresh, full profile of a specific user (use when admin asks "show me X's stats", "look up X", or you need data not in your current context)
+   args: {"user": "<email or name fragment>"}
+
+RULES FOR ACTIONS:
+- Only emit an action block when the admin explicitly asks you to DO something (send, notify, message, broadcast, alert, look up, show stats for X). Do NOT emit one for plain Q&A or research questions.
+- BEFORE the action block, write a one-line plain-text confirmation of what you're about to do, e.g. "Sending Dipanker a notification about the budget reset." Then the fenced block. Do not write anything after the block.
+- If the admin's request is ambiguous (no title, no recipient), ask a clarifying question instead of emitting an action.
+- The action block MUST be the very last thing in your response. Don't wrap it in commentary."""
 
 
 class AdminChatService:
@@ -283,16 +311,86 @@ class AdminChatService:
 
         return "\n".join(lines)
 
+    ACTION_BLOCK_RE = re.compile(r"```action\s*(\{.*?\})\s*```", re.DOTALL)
+
+    async def _llm(self, messages: list[dict]) -> str:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            resp = await client.post(
+                "https://integrate.api.nvidia.com/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {settings.NVIDIA_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": settings.NVIDIA_MODEL,
+                    "messages": messages,
+                    "max_tokens": 1500,
+                    "temperature": 0.6,
+                },
+            )
+            resp.raise_for_status()
+            return resp.json()["choices"][0]["message"]["content"].strip()
+
+    async def _execute_action(self, name: str, args: dict) -> tuple[str, str | None]:
+        """Run an admin tool. Returns (status_banner, extra_context_for_followup)."""
+        name = (name or "").strip()
+        args = args or {}
+
+        if name == "send_notification":
+            user_query = str(args.get("user", "")).strip()
+            title = str(args.get("title", "")).strip() or "Message from Admin"
+            msg = str(args.get("message", "")).strip()
+            severity = str(args.get("severity", "info")).strip()
+            if severity not in ("info", "success", "warning", "error"):
+                severity = "info"
+            if not user_query or not msg:
+                return ("⚠️ **Action skipped** — `send_notification` needs both a user and a message.", None)
+            target = await self._find_user(user_query)
+            if not target:
+                return (f"❌ **Action failed** — no user matched `{user_query}`.", None)
+            self.db.add(Notification(
+                user_id=target.id,
+                type="admin_message",
+                title=title[:200],
+                message=msg,
+                severity=severity,
+            ))
+            await self.db.commit()
+            log.info("admin_chat_send_notification", target_user=str(target.id), title=title)
+            return (f"✅ **Notification delivered** to **{target.name}** ({target.email}) — “{title}”.", None)
+
+        if name == "broadcast_announcement":
+            title = str(args.get("title", "")).strip() or "Announcement"
+            msg = str(args.get("message", "")).strip()
+            target = str(args.get("target", "all")).strip().lower()
+            if target not in ("all", "inactive"):
+                target = "all"
+            if not msg:
+                return ("⚠️ **Action skipped** — `broadcast_announcement` needs a message.", None)
+            from app.services.admin_service import AdminService
+            sent = await AdminService(self.db).broadcast_notification(title[:200], msg, target)
+            scope = "inactive users" if target == "inactive" else "all active users"
+            return (f"✅ **Broadcast delivered** to **{sent}** {scope} — “{title}”.", None)
+
+        if name == "view_user_stats":
+            user_query = str(args.get("user", "")).strip()
+            if not user_query:
+                return ("⚠️ **Action skipped** — `view_user_stats` needs a user.", None)
+            target = await self._find_user(user_query)
+            if not target:
+                return (f"❌ **Action failed** — no user matched `{user_query}`.", None)
+            ctx = await self._build_user_context(target)
+            return (f"🔎 Pulled fresh profile for **{target.name}**.", ctx)
+
+        return (f"❌ **Unknown action:** `{name}`.", None)
+
     async def chat(self, message: str, history: list[dict]) -> str:
         if not settings.NVIDIA_API_KEY:
             return "Admin AI is not configured. Add NVIDIA_API_KEY to .env to enable."
 
         today = date.today()
-
-        # Always include platform context
         platform_ctx = await self._build_platform_context()
 
-        # Check if a specific user is referenced
         user_ctx = ""
         user = await self._find_user(message)
         if user:
@@ -308,22 +406,48 @@ class AdminChatService:
         messages.append({"role": "user", "content": message[:1200]})
 
         try:
-            async with httpx.AsyncClient(timeout=45.0) as client:
-                resp = await client.post(
-                    "https://integrate.api.nvidia.com/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {settings.NVIDIA_API_KEY}",
-                        "Content-Type": "application/json",
-                    },
-                    json={
-                        "model": settings.NVIDIA_MODEL,
-                        "messages": messages,
-                        "max_tokens": 1500,
-                        "temperature": 0.6,
-                    },
-                )
-                resp.raise_for_status()
-                return resp.json()["choices"][0]["message"]["content"].strip()
+            reply = await self._llm(messages)
         except Exception as e:
             log.warning("admin_chat_error", error=str(e))
             return "Unable to connect to AI right now. Please try again."
+
+        m = self.ACTION_BLOCK_RE.search(reply)
+        if not m:
+            return reply
+
+        raw = m.group(1).strip()
+        try:
+            action = json.loads(raw)
+        except json.JSONDecodeError:
+            return reply.replace(m.group(0), "").rstrip() + "\n\n⚠️ **Action parse failed** — malformed JSON."
+
+        narration = reply[: m.start()].rstrip()
+        banner, extra_ctx = await self._execute_action(
+            action.get("name", ""), action.get("args", {}) or {}
+        )
+
+        # For view_user_stats, do a second LLM pass with the fresh data so the
+        # admin gets a properly formatted profile rather than raw context dump.
+        if extra_ctx is not None:
+            followup_messages = [
+                {"role": "system", "content": f"{ADMIN_SYSTEM}\n\n{full_context}\n\n{extra_ctx}"},
+            ]
+            for turn in history[-8:]:
+                if turn.get("role") in ("user", "assistant") and turn.get("content"):
+                    followup_messages.append({"role": turn["role"], "content": turn["content"]})
+            followup_messages.append({"role": "user", "content": message[:1200]})
+            followup_messages.append({
+                "role": "system",
+                "content": "The view_user_stats action just ran. Use the fresh profile above to write a clean, well-formatted answer for the admin. Do NOT emit another action block.",
+            })
+            try:
+                final = await self._llm(followup_messages)
+                final = self.ACTION_BLOCK_RE.sub("", final).rstrip()
+                return f"{banner}\n\n{final}"
+            except Exception as e:
+                log.warning("admin_chat_followup_error", error=str(e))
+                return f"{banner}\n\n{narration}" if narration else banner
+
+        if narration:
+            return f"{narration}\n\n{banner}"
+        return banner

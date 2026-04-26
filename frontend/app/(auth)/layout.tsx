@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import BackButton from "@/components/auth/BackButton";
 
 const FloatingWallet = dynamic(() => import("@/components/three/FloatingWallet"), { ssr: false });
 
@@ -10,6 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       className="relative min-h-screen flex items-center justify-center px-4 py-12 overflow-hidden"
       style={{ background: "var(--bg-canvas)" }}
     >
+      <BackButton href="/" />
       {/* Gradient orbs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-[120px]" style={{ background: "rgba(124,92,255,0.12)" }} />
