@@ -54,7 +54,14 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://spendwise.ai", "https://spndai.netlify.app"]
+    ALLOWED_ORIGINS: List[str] = [
+        "http://localhost:3000",
+        "https://spendwise.ai",
+        "https://spndai.netlify.app",
+        "https://localhost",        # Capacitor Android default origin
+        "capacitor://localhost",    # Capacitor iOS default origin
+        "http://localhost",         # Capacitor Android with cleartext (fallback)
+    ]
 
     # Sentry
     SENTRY_DSN: str = ""
