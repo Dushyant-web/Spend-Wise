@@ -31,7 +31,7 @@ _keep_alive_task: asyncio.Task | None = None
 async def _keep_alive():
     while True:
         try:
-            await asyncio.sleep(720)  # 12 minutes
+            await asyncio.sleep(300)  # 5 minutes
             await redis_client.ping()
             logger.info("keep_alive_ping")
         except Exception as e:
