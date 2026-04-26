@@ -54,6 +54,12 @@ export default function EditExpenseModal({ expense, open, onClose }: Props) {
     });
   }, [expense, reset]);
 
+  useEffect(() => {
+    if (open) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
   const onSubmit = async (values: FormValues) => {
     try {
       await mutateAsync({
@@ -75,94 +81,213 @@ export default function EditExpenseModal({ expense, open, onClose }: Props) {
   return (
     <AnimatePresence>
       {open && (
-        <>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
             onClick={onClose}
+            className="absolute inset-0"
+            style={{
+              background: "rgba(8, 6, 14, 0.72)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 px-4"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: "spring", stiffness: 380, damping: 32 }}
+            className="relative w-full sm:max-w-md max-h-[92vh] overflow-y-auto"
+            style={{
+              background: "var(--bg-elevated)",
+              border: "1px solid var(--border-default)",
+              borderRadius: "20px 20px 0 0",
+              boxShadow: "0 -20px 60px rgba(0,0,0,0.5), 0 0 0 1px var(--border-subtle) inset",
+              paddingBottom: "max(env(safe-area-inset-bottom), 16px)",
+            }}
           >
-            <div className="glass-card rounded-2xl p-6 border border-white/10 bg-surface-dark">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg font-semibold text-white">Edit Expense</h2>
-                <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
-                  <X className="w-5 h-5" />
-                </button>
+            {/* Drag handle (mobile) */}
+            <div className="sm:hidden flex justify-center pt-3 pb-1">
+              <div
+                style={{
+                  width: 40,
+                  height: 4,
+                  borderRadius: 999,
+                  background: "var(--border-strong)",
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between px-5 pt-4 pb-3">
+              <h2
+                className="font-display"
+                style={{ color: "var(--text-primary)", fontSize: "1.125rem", fontWeight: 600, letterSpacing: "-0.01em" }}
+              >
+                Edit Expense
+              </h2>
+              <button
+                onClick={onClose}
+                className="p-1.5 rounded-lg transition-colors"
+                style={{ color: "var(--text-tertiary)" }}
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSubmit(onSubmit)} className="px-5 pb-4 space-y-4">
+              {/* Amount */}
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                  Amount (₹)
+                </label>
+                <input
+                  {...register("amount")}
+                  type="number"
+                  step="0.01"
+                  inputMode="decimal"
+                  className="w-full rounded-xl px-3.5 py-3 text-lg font-semibold focus:outline-none"
+                  style={{
+                    background: "var(--bg-overlay)",
+                    border: "1px solid var(--border-default)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+                {errors.amount && (
+                  <p className="text-xs mt-1" style={{ color: "var(--danger)" }}>
+                    {errors.amount.message}
+                  </p>
+                )}
               </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                <div>
-                  <label className="text-sm text-gray-400 mb-1 block">Amount (₹)</label>
-                  <input
-                    {...register("amount")}
-                    type="number"
-                    step="0.01"
-                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-primary/50 text-lg font-semibold"
-                  />
-                  {errors.amount && <p className="text-red-400 text-xs mt-1">{errors.amount.message}</p>}
+              {/* Category */}
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                  Category
+                </label>
+                <div className="grid grid-cols-4 sm:grid-cols-5 gap-1.5">
+                  {CATEGORIES.map((cat) => (
+                    <label key={cat.value} className="cursor-pointer">
+                      <input
+                        {...register("category")}
+                        type="radio"
+                        value={cat.value}
+                        className="sr-only peer"
+                      />
+                      <div
+                        className="flex flex-col items-center justify-center p-2 rounded-xl transition-all peer-checked:[&]:cat-active text-center"
+                        style={{
+                          border: "1px solid var(--border-default)",
+                          color: "var(--text-tertiary)",
+                          background: "var(--bg-overlay)",
+                        }}
+                      >
+                        <span className="text-lg leading-none">{cat.emoji}</span>
+                        <span className="text-[10px] mt-1 leading-tight">
+                          {cat.label.split(" ")[0]}
+                        </span>
+                      </div>
+                    </label>
+                  ))}
                 </div>
+              </div>
 
+              {/* Payment + Date */}
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm text-gray-400 mb-1 block">Category</label>
-                  <div className="grid grid-cols-5 gap-1.5">
-                    {CATEGORIES.map((cat) => (
-                      <label key={cat.value} className="cursor-pointer">
-                        <input {...register("category")} type="radio" value={cat.value} className="sr-only peer" />
-                        <div className="flex flex-col items-center justify-center p-2 rounded-lg border border-white/10 text-gray-400 peer-checked:border-primary peer-checked:bg-primary/10 peer-checked:text-white transition-all hover:border-white/20 text-center">
-                          <span className="text-lg leading-none">{cat.emoji}</span>
-                          <span className="text-[9px] mt-0.5 leading-tight">{cat.label.split(" ")[0]}</span>
-                        </div>
-                      </label>
+                  <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                    Payment
+                  </label>
+                  <select
+                    {...register("payment_mode")}
+                    className="w-full rounded-xl px-3 py-2.5 focus:outline-none appearance-none"
+                    style={{
+                      background: "var(--bg-overlay)",
+                      border: "1px solid var(--border-default)",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    {PAYMENT_MODES.map((m) => (
+                      <option key={m.value} value={m.value} style={{ background: "var(--bg-elevated)" }}>
+                        {m.icon} {m.label}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-sm text-gray-400 mb-1 block">Payment</label>
-                    <select {...register("payment_mode")} className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-primary/50 appearance-none">
-                      {PAYMENT_MODES.map((m) => (
-                        <option key={m.value} value={m.value} className="bg-gray-900">{m.icon} {m.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-sm text-gray-400 mb-1 block">Date</label>
-                    <input {...register("expense_date")} type="date" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-primary/50" />
-                  </div>
-                </div>
-
                 <div>
-                  <label className="text-sm text-gray-400 mb-1 block">Merchant</label>
-                  <input {...register("merchant")} type="text" placeholder="e.g. Swiggy" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 focus:outline-none focus:border-primary/50" />
+                  <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                    Date
+                  </label>
+                  <input
+                    {...register("expense_date")}
+                    type="date"
+                    className="w-full rounded-xl px-3 py-2.5 focus:outline-none"
+                    style={{
+                      background: "var(--bg-overlay)",
+                      border: "1px solid var(--border-default)",
+                      color: "var(--text-primary)",
+                    }}
+                  />
                 </div>
+              </div>
 
-                <div>
-                  <label className="text-sm text-gray-400 mb-1 block">Note</label>
-                  <input {...register("note")} type="text" placeholder="Any description" className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-white placeholder-gray-600 focus:outline-none focus:border-primary/50" />
-                </div>
+              {/* Merchant */}
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                  Merchant
+                </label>
+                <input
+                  {...register("merchant")}
+                  type="text"
+                  placeholder="e.g. Swiggy"
+                  className="w-full rounded-xl px-3 py-2.5 focus:outline-none"
+                  style={{
+                    background: "var(--bg-overlay)",
+                    border: "1px solid var(--border-default)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
 
-                <motion.button
-                  type="submit"
-                  disabled={isPending}
-                  whileHover={{ scale: 1.01 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
-                >
-                  {isPending ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</> : "Save Changes"}
-                </motion.button>
-              </form>
-            </div>
+              {/* Note */}
+              <div>
+                <label className="text-xs mb-1.5 block" style={{ color: "var(--text-secondary)" }}>
+                  Note
+                </label>
+                <input
+                  {...register("note")}
+                  type="text"
+                  placeholder="Any description"
+                  className="w-full rounded-xl px-3 py-2.5 focus:outline-none"
+                  style={{
+                    background: "var(--bg-overlay)",
+                    border: "1px solid var(--border-default)",
+                    color: "var(--text-primary)",
+                  }}
+                />
+              </div>
+
+              <motion.button
+                type="submit"
+                disabled={isPending}
+                whileTap={{ scale: 0.98 }}
+                className="w-full py-3 font-semibold rounded-xl flex items-center justify-center gap-2 disabled:opacity-60"
+                style={{
+                  background: "linear-gradient(135deg, var(--accent), var(--accent-hover))",
+                  color: "#fff",
+                  boxShadow: "0 8px 24px var(--accent-glow)",
+                }}
+              >
+                {isPending ? (
+                  <><Loader2 className="w-4 h-4 animate-spin" /> Saving…</>
+                ) : (
+                  "Save Changes"
+                )}
+              </motion.button>
+            </form>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

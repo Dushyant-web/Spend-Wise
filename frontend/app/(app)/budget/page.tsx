@@ -33,7 +33,7 @@ function ProgressBar({ pct }: { pct: number }) {
     ? "linear-gradient(90deg, var(--danger), #F87171)"
     : pct >= 70
     ? "linear-gradient(90deg, var(--warning), #FCD34D)"
-    : "linear-gradient(90deg, var(--accent), #7DDEFF)";
+    : "linear-gradient(90deg, var(--accent), #A78BFA)";
   return (
     <div style={{ height: 6, background: "var(--bg-overlay)", borderRadius: 99, overflow: "hidden" }}>
       <motion.div

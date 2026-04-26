@@ -18,7 +18,7 @@ export default function MobileWelcome() {
         position: "fixed",
         inset: 0,
         background:
-          "radial-gradient(120% 80% at 50% 0%, #0E2647 0%, #081A33 50%, #050E1B 100%)",
+          "radial-gradient(120% 80% at 50% 0%, #1a1638 0%, #0a0820 50%, #050507 100%)",
         overflow: "hidden",
         display: "flex",
         flexDirection: "column",
@@ -26,7 +26,7 @@ export default function MobileWelcome() {
     >
       <StarsBackground />
 
-      {/* Aurora glow — cyan + teal */}
+      {/* Aurora glow — violet + emerald */}
       <div
         aria-hidden
         style={{
@@ -36,7 +36,7 @@ export default function MobileWelcome() {
           width: "120%",
           height: "70%",
           background:
-            "radial-gradient(50% 50% at 50% 50%, rgba(79,209,255,0.32) 0%, rgba(79,209,255,0) 70%)",
+            "radial-gradient(50% 50% at 50% 50%, rgba(108,99,255,0.32) 0%, rgba(108,99,255,0) 70%)",
           filter: "blur(40px)",
           pointerEvents: "none",
           zIndex: 1,
@@ -51,7 +51,7 @@ export default function MobileWelcome() {
           width: "100%",
           height: "60%",
           background:
-            "radial-gradient(50% 50% at 50% 50%, rgba(0,201,167,0.22) 0%, rgba(0,201,167,0) 70%)",
+            "radial-gradient(50% 50% at 50% 50%, rgba(0,212,170,0.20) 0%, rgba(0,212,170,0) 70%)",
           filter: "blur(40px)",
           pointerEvents: "none",
           zIndex: 1,
@@ -92,11 +92,11 @@ export default function MobileWelcome() {
               width: 22,
               height: 22,
               borderRadius: 7,
-              background: "linear-gradient(135deg, #4FD1FF, #00C9A7)",
-              boxShadow: "0 0 18px rgba(79,209,255,0.55)",
+              background: "linear-gradient(135deg, #6C63FF, #A78BFA)",
+              boxShadow: "0 0 18px rgba(108,99,255,0.55)",
             }}
           >
-            <Zap style={{ width: 12, height: 12, color: "#06243A" }} fill="#06243A" />
+            <Zap style={{ width: 12, height: 12, color: "#FFFFFF" }} fill="#FFFFFF" />
           </div>
           <span style={{ fontSize: 13, fontWeight: 600, color: "#F0F0FF", letterSpacing: 0.2 }}>
             SpendWise AI
@@ -145,12 +145,12 @@ export default function MobileWelcome() {
             padding: "5px 10px",
             marginBottom: 14,
             borderRadius: 999,
-            background: "rgba(79,209,255,0.10)",
-            border: "1px solid rgba(79,209,255,0.25)",
+            background: "rgba(108,99,255,0.10)",
+            border: "1px solid rgba(108,99,255,0.25)",
           }}
         >
-          <Sparkles style={{ width: 11, height: 11, color: "#7DDEFF" }} />
-          <span style={{ fontSize: 11, fontWeight: 600, color: "#B8EEFF", letterSpacing: 0.3 }}>
+          <Sparkles style={{ width: 11, height: 11, color: "#A78BFA" }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: "#C7BBFF", letterSpacing: 0.3 }}>
             BUILT FOR INDIAN STUDENTS
           </span>
         </div>
@@ -169,7 +169,7 @@ export default function MobileWelcome() {
           <br />
           <span
             style={{
-              background: "linear-gradient(90deg, #4FD1FF 0%, #7DDEFF 50%, #00C9A7 100%)",
+              background: "linear-gradient(90deg, #6C63FF 0%, #A78BFA 50%, #00D4AA 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -203,11 +203,11 @@ export default function MobileWelcome() {
                 gap: 8,
                 height: 54,
                 borderRadius: 16,
-                background: "linear-gradient(135deg, #4FD1FF 0%, #2BB6E4 100%)",
-                color: "#06243A",
+                background: "linear-gradient(135deg, #6C63FF 0%, #A78BFA 100%)",
+                color: "#FFFFFF",
                 fontWeight: 700,
                 fontSize: 16,
-                boxShadow: "0 12px 30px rgba(79,209,255,0.45), 0 0 0 1px rgba(255,255,255,0.18) inset",
+                boxShadow: "0 12px 30px rgba(108,99,255,0.45), 0 0 0 1px rgba(255,255,255,0.18) inset",
               }}
             >
               Get started — it's free
@@ -244,15 +244,15 @@ export default function MobileWelcome() {
             textAlign: "center",
             fontSize: 11.5,
             lineHeight: 1.5,
-            color: "#5A7494",
+            color: "#6B7280",
           }}
         >
           By continuing, you agree to our{" "}
-          <Link href="/terms" style={{ color: "#7DDEFF", textDecoration: "none" }}>
+          <Link href="/terms" style={{ color: "#A78BFA", textDecoration: "none" }}>
             Terms
           </Link>{" "}
           &{" "}
-          <Link href="/privacy" style={{ color: "#7DDEFF", textDecoration: "none" }}>
+          <Link href="/privacy" style={{ color: "#A78BFA", textDecoration: "none" }}>
             Privacy Policy
           </Link>
           .

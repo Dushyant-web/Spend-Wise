@@ -106,22 +106,23 @@ export default function ImportCSVModal({ open, onClose }: Props) {
   return (
     <AnimatePresence>
       {open && (
-        <>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleClose}
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            transition={{ type: "spring", damping: 20, stiffness: 300 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50 px-4"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ type: "spring", damping: 32, stiffness: 380 }}
+            className="relative w-full sm:max-w-md max-h-[92vh] overflow-y-auto"
+            style={{ paddingBottom: "max(env(safe-area-inset-bottom), 16px)" }}
           >
-            <div className="glass-card rounded-2xl p-6 border border-white/10 bg-surface-dark">
+            <div className="glass-card rounded-t-2xl sm:rounded-2xl p-6 border border-white/10 bg-surface-dark">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-lg font-semibold text-white">Import / Export</h2>
                 <button onClick={handleClose} className="text-gray-400 hover:text-white transition-colors">
@@ -237,7 +238,7 @@ export default function ImportCSVModal({ open, onClose }: Props) {
               )}
             </div>
           </motion.div>
-        </>
+        </div>
       )}
     </AnimatePresence>
   );

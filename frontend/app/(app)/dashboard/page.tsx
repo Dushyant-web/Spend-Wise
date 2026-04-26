@@ -336,7 +336,7 @@ export default function DashboardPage() {
                     ? "linear-gradient(90deg, var(--danger), #F87171)"
                     : budget.percentage_used >= 70
                     ? "linear-gradient(90deg, var(--warning), #FCD34D)"
-                    : "linear-gradient(90deg, var(--accent), #7DDEFF)",
+                    : "linear-gradient(90deg, var(--accent), #A78BFA)",
                 }}
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.min(budget.percentage_used, 100)}%` }}

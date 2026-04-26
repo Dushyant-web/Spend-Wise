@@ -69,7 +69,7 @@ export default function TopBar({ onAddExpense }: TopBarProps) {
             whileTap={{ scale: 0.92 }}
             onClick={() => setProfileOpen(true)}
             className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
-            style={{ background: "linear-gradient(135deg, var(--accent), #00C9A7)" }}
+            style={{ background: "linear-gradient(135deg, var(--accent), #A78BFA)" }}
             title="Profile"
           >
             {initials}
@@ -114,7 +114,7 @@ export default function TopBar({ onAddExpense }: TopBarProps) {
             onClick={() => setProfileOpen(true)}
             className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
             style={{
-              background: "linear-gradient(135deg, var(--accent), #00C9A7)",
+              background: "linear-gradient(135deg, var(--accent), #A78BFA)",
               boxShadow: "0 0 0 2px var(--bg-base), 0 0 0 3px var(--border-subtle)",
             }}
             title="Profile"
