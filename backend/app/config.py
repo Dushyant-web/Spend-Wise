@@ -54,7 +54,7 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/2"
 
     # CORS
-    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://spendwise.ai"]
+    ALLOWED_ORIGINS: List[str] = ["http://localhost:3000", "https://spendwise.ai", "https://spndai.netlify.app"]
 
     # Sentry
     SENTRY_DSN: str = ""

@@ -1,3 +1,4 @@
+import asyncio
 import structlog
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -24,10 +25,23 @@ structlog.configure(
 
 logger = structlog.get_logger()
 
+_keep_alive_task: asyncio.Task | None = None
+
+
+async def _keep_alive():
+    while True:
+        try:
+            await asyncio.sleep(720)  # 12 minutes
+            await redis_client.ping()
+            logger.info("keep_alive_ping")
+        except Exception as e:
+            logger.warning("keep_alive_failed", error=str(e))
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    global _keep_alive_task
     try:
         await redis_client.ping()
         logger.info("redis_connected", url=settings.REDIS_URL)
@@ -42,9 +56,12 @@ async def lifespan(app: FastAPI):
             logger.info("database_tables_ready")
 
     logger.info("spendwise_api_started", env=settings.APP_ENV, version=settings.APP_VERSION)
+    _keep_alive_task = asyncio.create_task(_keep_alive())
     yield
 
     # Shutdown
+    if _keep_alive_task:
+        _keep_alive_task.cancel()
     await redis_client.aclose()
     await engine.dispose()
     logger.info("spendwise_api_stopped")
