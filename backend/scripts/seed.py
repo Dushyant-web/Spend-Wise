@@ -22,7 +22,7 @@ from app.models.expense import Expense
 from app.models.budget import Budget
 from app.core.security import hash_password
 
-engine = create_async_engine(settings.DATABASE_URL, echo=False)
+engine = create_async_engine(settings.async_database_url, echo=False)
 AsyncSessionLocal = sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -498,10 +498,11 @@ async def seed():
         user_id = uuid.uuid4()
         user = User(
             id=user_id,
-            email="di@gmail.com",
+            email="spendwise@gmail.com",
             name="Dipanker",
-            hashed_password=hash_password("Di@1"),
+            hashed_password=await hash_password("try123"),
             is_verified=True,
+            onboarding_done=True,
             college="Sharda University",
             city="Greater Noida",
             monthly_income=Decimal("12000"),
@@ -551,8 +552,8 @@ async def seed():
 
     total = len(all_expenses)
     total_spent = sum(float(e.amount) for e in all_expenses)
-    print(f"✅  Demo user created: demo@spendwise.ai / Demo@1234")
-    print(f"    Name: Arjun Sharma | College: Sharda University, Greater Noida")
+    print(f"✅  Demo user created: spendwise@gmail.com / try123")
+    print(f"    Name: Dipanker | College: Sharda University, Greater Noida")
     print(f"    {total} expenses | ₹{total_spent:,.0f} total over 12 months")
     print(f"    Avg monthly spend: ₹{total_spent/12:,.0f}")
     await engine.dispose()
